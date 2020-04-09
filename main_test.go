@@ -1,9 +1,9 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
-	"os"
 )
 
 func TestSanity(t *testing.T) {
@@ -15,7 +15,10 @@ func TestGetFromProcessName(t *testing.T) {
 
 	process, err := GetFromProcessName(name)
 
-	
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
 	if process.ID == 0 {
 		t.Errorf("unexpected process id")
 	}
@@ -23,9 +26,21 @@ func TestGetFromProcessName(t *testing.T) {
 	if process.Name != name {
 		t.Errorf("unexpected process name")
 	}
+}
+
+func TestProcessOpen(t *testing.T) {
+	name := executableName()
+
+	process, _ := GetFromProcessName(name)
+
+	handle, err := process.Open()
 
 	if err != nil {
-		t.Errorf("unable to get process by name")
+		t.Errorf(err.Error())
+	}
+
+	if handle == 0 {
+		t.Errorf("unable to open handle")
 	}
 }
 

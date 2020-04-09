@@ -23,17 +23,16 @@ const (
 )
 
 type (
-	// BOOL      int32
-	// DWORD     uint32
-	// ULONG_PTR uintptr
-	// HANDLE uintptr
-	// LPVOID    unsafe.Pointer
-	// LPCVOID unsafe.Pointer
-	// SIZE_T    uintptr
-	// HMODULE HANDLE
-	// BYTE      byte
+// BOOL      int32
+// DWORD     uint32
+// ULONG_PTR uintptr
+// HANDLE    uintptr
+// LPVOID    unsafe.Pointer
+// LPCVOID   unsafe.Pointer
+// SIZE_T    uintptr
+// HMODULE   uintptr
+// BYTE      byte
 )
-
 
 var (
 	kernel32                     = syscall.MustLoadDLL("kernel32.dll")
@@ -67,20 +66,20 @@ type ProcessEntry32 struct {
 }
 
 func getProcessID(process string) (uint32, error) {
-	var snap uintptr
+	var handle uintptr
 	var pe32 ProcessEntry32
 
-	snap = createToolhelp32Snapshot(TH32CS_SNAPALL, 0)
+	handle = createToolhelp32Snapshot(TH32CS_SNAPALL, 0)
 	pe32.DwSize = uint32(unsafe.Sizeof(pe32))
-	exit := process32First(snap, &pe32)
+	exit := process32First(handle, &pe32)
 	parsed := parseint8(pe32.SzExeFile[:])
 
 	if !exit {
-		closeHandle(snap)
+		closeHandle(handle)
 
 		return 0, errors.New("failed to get pid")
 	} else {
-		for i := true; i; i = process32Next(snap, &pe32) {
+		for i := true; i; i = process32Next(handle, &pe32) {
 			parsed = parseint8(pe32.SzExeFile[:])
 
 			if parsed == process {
@@ -88,6 +87,7 @@ func getProcessID(process string) (uint32, error) {
 			}
 		}
 	}
+
 	return 0, errors.New("failed to get pid")
 }
 
@@ -97,6 +97,7 @@ func createToolhelp32Snapshot(dwFlags uintptr, th32ProcessID uint32) uintptr {
 		uintptr(dwFlags),
 		uintptr(th32ProcessID),
 	)
+
 	return uintptr(ret)
 }
 
@@ -106,6 +107,7 @@ func process32First(hSnapshot uintptr, pe *ProcessEntry32) bool {
 		uintptr(hSnapshot),
 		uintptr(unsafe.Pointer(pe)),
 	)
+
 	return ret != 0
 }
 
@@ -115,7 +117,28 @@ func process32Next(hSnapshot uintptr, pe *ProcessEntry32) bool {
 		uintptr(hSnapshot),
 		uintptr(unsafe.Pointer(pe)),
 	)
+
 	return ret != 0
+}
+
+// https://msdn.microsoft.com/8f695c38-19c4-49e4-97de-8b64ea536cb1
+func openProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32) (uintptr, error) {
+	inHandle := 0
+	if bInheritHandle {
+		inHandle = 1
+	}
+
+	ret, _, _ := procOpenProcess.Call(
+		uintptr(dwDesiredAccess),
+		uintptr(inHandle),
+		uintptr(dwProcessId),
+	)
+
+	if ret == 0 {
+		return 0, errors.New("failed to open process")
+	}
+
+	return uintptr(ret), nil
 }
 
 // https://msdn.microsoft.com/9b84891d-62ca-4ddc-97b7-c4c79482abd9
@@ -123,6 +146,7 @@ func closeHandle(hObject uintptr) bool {
 	ret, _, _ := procCloseHandle.Call(
 		uintptr(hObject),
 	)
+
 	return ret != 0
 }
 

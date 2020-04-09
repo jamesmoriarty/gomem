@@ -1,9 +1,9 @@
 package main
 
 type Process struct {
-	ID uint32
-	Name string
-	Handle uint32
+	ID     uint32
+	Name   string
+	Handle uintptr
 }
 
 func GetFromProcessName(name string) (*Process, error) {
@@ -18,7 +18,18 @@ func GetFromProcessName(name string) (*Process, error) {
 	return &process, nil
 }
 
+func (p *Process) Open() (uintptr, error) {
+	handle, err := openProcess(PROCESS_ALL_ACCESS, false, p.ID)
+	
+	if err != nil {
+		return 0, err
+	}
 
-func main(){
+	p.Handle = handle
+
+	return handle, err
+}
+
+func main() {
 
 }
