@@ -1,4 +1,4 @@
-package main
+package gomem
 
 import (
 	"os"
@@ -6,10 +6,6 @@ import (
 	"testing"
 	"unsafe"
 )
-
-func TestSanity(t *testing.T) {
-	main()
-}
 
 func TestGetFromProcessName(t *testing.T) {
 	name := executableName()

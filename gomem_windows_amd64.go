@@ -1,4 +1,4 @@
-package main
+package gomem
 
 import (
 	"fmt"
@@ -78,8 +78,4 @@ func (p *Process) GetModule(name string) (uintptr, error) {
 	}
 
 	return ptr, nil
-}
-
-func main() {
-
 }
