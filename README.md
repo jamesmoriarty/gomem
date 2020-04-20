@@ -1,6 +1,6 @@
 # GoMem
 
-![Build Status](https://img.shields.io/github/workflow/status/jamesmoriarty/gomem/Continuous%20Integration)
+![Continuous Integration](https://github.com/jamesmoriarty/gomem/workflows/Continuous%20Integration/badge.svg?branch=master)
 
 A Go library to manipulate Windows processes.
 
