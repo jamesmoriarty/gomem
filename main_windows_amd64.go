@@ -34,8 +34,7 @@ func GetFromProcessName(name string) (*Process, error) {
 	return &process, nil
 }
 
-// Open opens a Process handle for read/write.
-// It returns uintptr representing a windows handle.
+// Open opens a Process handle.
 func (p *Process) Open() (uintptr, error) {
 	handle, err := process.OpenProcess(process.PROCESS_ALL_ACCESS, false, p.ID)
 	
@@ -49,7 +48,6 @@ func (p *Process) Open() (uintptr, error) {
 }
 
 // Read process memory.
-// It returns a *[]byte with the memory contents.
 func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) (error) {
 	_, err := process.ReadProcessMemory(p.Handle, offset, buffer, length)
 
