@@ -1,9 +1,18 @@
 package main
 
 import (
-	"unsafe"
+	"fmt"
+	"strconv"
 	"github.com/jamesmoriarty/gomem/internal/process"
 )
+
+// PtrToHex converts uintptr to hex string.
+func PtrToHex(ptr uintptr) string {
+	s := fmt.Sprintf("%d", ptr)
+	n, _ := strconv.Atoi(s)
+	h := fmt.Sprintf("0x%x", n)
+	return h
+}
 
 // Process is a struct representing a windows process.
 type Process struct {
@@ -40,20 +49,19 @@ func (p *Process) Open() (uintptr, error) {
 }
 
 // Read process memory.
-func (p *Process) Read(offset uintptr, bytes uintptr) (*[]byte, error) {
-	buffer := make([]byte, bytes, bytes)
-	ptr := uintptr(unsafe.Pointer(&buffer))
+// It returns a *[]byte with the memory contents.
+func (p *Process) Read(offset uintptr, bytes uintptr) (*uintptr, error) {
+	var buffer uintptr
 
-	process.ReadProcessMemory(p.Handle, offset, &ptr, bytes)
-	// _, err := readProcessMemory(p.Handle, offset, &ptr, bytes)
+	// process.ReadProcessMemory(p.Handle, offset, &ptr, bytes)
+	_, err := process.ReadProcessMemory(p.Handle, offset, &buffer, bytes)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
 	return &buffer, nil
 }
-
 
 func main() {
 

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
+	"unsafe"
 )
 
 func TestSanity(t *testing.T) {
@@ -41,20 +41,23 @@ func TestProcessOpen(t *testing.T) {
 	}
 
 	if handle == 0 {
-		t.Errorf("unable to open handle")
+		t.Errorf("unexpected handle id")
 	}
 }
 
 func TestProcessRead(t *testing.T) {
 	name := executableName()
+	
+	testInt32 := 42
+	offset := (uintptr)(unsafe.Pointer(&testInt32))
 
 	process, _ := GetFromProcessName(name)
-
 	process.Open()
+	ptr, err := process.Read(offset, 4)
 
-    buffer, err := process.Read(0x23d000, 4)
-
-	fmt.Println(buffer)
+	if (int)(*ptr) != testInt32 {
+		t.Errorf(err.Error())
+	}
 
 	if err != nil {
 		t.Errorf(err.Error())
