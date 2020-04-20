@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -41,6 +42,22 @@ func TestProcessOpen(t *testing.T) {
 
 	if handle == 0 {
 		t.Errorf("unable to open handle")
+	}
+}
+
+func TestProcessRead(t *testing.T) {
+	name := executableName()
+
+	process, _ := GetFromProcessName(name)
+
+	process.Open()
+
+    buffer, err := process.Read(0x23d000, 4)
+
+	fmt.Println(buffer)
+
+	if err != nil {
+		t.Errorf(err.Error())
 	}
 }
 

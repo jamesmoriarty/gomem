@@ -1,4 +1,4 @@
-package main
+package process
 
 import (
 	"bytes"
@@ -65,7 +65,7 @@ type ProcessEntry32 struct {
 	SzExeFile           [260]uint8
 }
 
-func getProcessID(process string) (uint32, error) {
+func GetProcessID(process string) (uint32, error) {
 	var handle uintptr
 	var pe32 ProcessEntry32
 
@@ -122,7 +122,7 @@ func process32Next(hSnapshot uintptr, pe *ProcessEntry32) bool {
 }
 
 // https://msdn.microsoft.com/8f695c38-19c4-49e4-97de-8b64ea536cb1
-func openProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32) (uintptr, error) {
+func OpenProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32) (uintptr, error) {
 	inHandle := 0
 	if bInheritHandle {
 		inHandle = 1
@@ -148,6 +148,23 @@ func closeHandle(hObject uintptr) bool {
 	)
 
 	return ret != 0
+}
+
+// https://msdn.microsoft.com/8774e145-ee7f-44de-85db-0445b905f986
+func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+	ret, _, _ := procReadProcessMemory.Call(
+		uintptr(hProcess),
+		uintptr(unsafe.Pointer(lpBaseAddress)),
+		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(nSize),
+		0,
+	)
+
+	if ret == 0 {
+		return 0, errors.New("failed to read memory")
+	}
+
+	return ret, nil
 }
 
 func parseint8(arr []uint8) string {
