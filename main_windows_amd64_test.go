@@ -48,8 +48,11 @@ func TestProcessOpen(t *testing.T) {
 func TestProcessRead(t *testing.T) {
 	name := executableName()
 	
-	testInt32 := 42
-	offset := (uintptr)(unsafe.Pointer(&testInt32))
+	var buffer uintptr
+	bufferPtr := &buffer
+
+	value := 42
+	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
 	process, err := GetFromProcessName(name)
 
@@ -57,16 +60,14 @@ func TestProcessRead(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	
-	var buffer uintptr
-
 	process.Open()
-	ptr, err := process.Read(offset, buffer, 4)
+	err = process.Read(valuePtr, bufferPtr, unsafe.Sizeof(value))
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(*ptr) != testInt32 {
+	if (int)(*bufferPtr) != value {
 		t.Errorf(err.Error())
 	}
 }
