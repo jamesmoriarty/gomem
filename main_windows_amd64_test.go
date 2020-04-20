@@ -57,8 +57,10 @@ func TestProcessRead(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 	
+	var buffer uintptr
+
 	process.Open()
-	ptr, err := process.Read(offset, 4)
+	ptr, err := process.Read(offset, buffer, 4)
 
 	if err != nil {
 		t.Errorf(err.Error())

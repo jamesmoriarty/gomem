@@ -50,10 +50,7 @@ func (p *Process) Open() (uintptr, error) {
 
 // Read process memory.
 // It returns a *[]byte with the memory contents.
-func (p *Process) Read(offset uintptr, bytes uintptr) (*uintptr, error) {
-	var buffer uintptr
-
-	// process.ReadProcessMemory(p.Handle, offset, &ptr, bytes)
+func (p *Process) Read(offset uintptr, buffer uintptr, bytes uintptr) (*uintptr, error) {
 	_, err := process.ReadProcessMemory(p.Handle, offset, &buffer, bytes)
 
 	if err != nil {
