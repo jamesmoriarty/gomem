@@ -51,15 +51,20 @@ func TestProcessRead(t *testing.T) {
 	testInt32 := 42
 	offset := (uintptr)(unsafe.Pointer(&testInt32))
 
-	process, _ := GetFromProcessName(name)
+	process, err := GetFromProcessName(name)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	
 	process.Open()
 	ptr, err := process.Read(offset, 4)
 
-	if (int)(*ptr) != testInt32 {
+	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if err != nil {
+	if (int)(*ptr) != testInt32 {
 		t.Errorf(err.Error())
 	}
 }
