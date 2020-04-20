@@ -58,6 +58,17 @@ func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) (error) 
 	return nil
 }
 
+// Write process memory.
+func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) (error) {
+	_, err := process.WriteProcessMemory(p.Handle, offset, buffer, length)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func main() {
 
 }

@@ -154,12 +154,28 @@ func closeHandle(hObject uintptr) bool {
 func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
 	ret, _, err := procReadProcessMemory.Call(
 		uintptr(hProcess),
-		uintptr(unsafe.Pointer(lpBaseAddress)),
+		uintptr(lpBaseAddress),
 		uintptr(unsafe.Pointer(lpBuffer)),
 		uintptr(nSize),
 		0,
 	)
 
+	if err.Error() != "The operation completed successfully." {
+		return 0, err
+	}
+
+	return ret, nil
+}
+
+// https://msdn.microsoft.com/9cd91f1c-58ce-4adc-b027-45748543eb06
+func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+	ret, _, err := procWriteProcessMemory.Call(
+		uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(nSize),
+	)
+	
 	if err.Error() != "The operation completed successfully." {
 		return 0, err
 	}

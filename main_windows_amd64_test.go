@@ -29,21 +29,21 @@ func TestGetFromProcessName(t *testing.T) {
 	}
 }
 
-func TestProcessOpen(t *testing.T) {
-	name := executableName()
+// func TestProcessOpen(t *testing.T) {
+// 	name := executableName()
 
-	process, _ := GetFromProcessName(name)
+// 	process, _ := GetFromProcessName(name)
 
-	handle, err := process.Open()
+// 	handle, err := process.Open()
 
-	if err != nil {
-		t.Errorf(err.Error())
-	}
+// 	if err != nil {
+// 		t.Errorf(err.Error())
+// 	}
 
-	if handle == 0 {
-		t.Errorf("unexpected handle id")
-	}
-}
+// 	if handle == 0 {
+// 		t.Errorf("unexpected handle id")
+// 	}
+// }
 
 func TestProcessRead(t *testing.T) {
 	name := executableName()
@@ -68,7 +68,34 @@ func TestProcessRead(t *testing.T) {
 	}
 
 	if (int)(*bufferPtr) != value {
+		t.Errorf("unexpected value")
+	}
+}
+
+func TestProcessWrite(t *testing.T) {
+	name := executableName()
+	
+	buffer := (uintptr)(43)
+	bufferPtr := &buffer
+
+	value := 42
+	valuePtr := (uintptr)(unsafe.Pointer(&value))
+
+	process, err := GetFromProcessName(name)
+
+	if err != nil {
 		t.Errorf(err.Error())
+	}
+	
+	process.Open()
+	err = process.Write(valuePtr, bufferPtr, unsafe.Sizeof(value))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if (int)(buffer) != value {
+		t.Errorf("unexpected value")
 	}
 }
 
