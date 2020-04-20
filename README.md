@@ -24,5 +24,5 @@ go build
 ## Test
 
 ```
-go test -v -coverprofile cover.txt
+go test
 ```
