@@ -62,7 +62,99 @@ type ProcessEntry32 struct {
 	Th32ParentProcessID uint32
 	PcPriClassBase      uint32
 	DwFlags             uint32
-	SzExeFile           [260]uint8
+	SzExeFile           [MAX_PATH]uint8
+}
+
+// https://msdn.microsoft.com/305fab35-625c-42e3-a434-e2513e4c8870
+type ModuleEntry32 struct {
+	DwSize        uint32
+	Th32ModuleID  uint32
+	Th32ProcessID uint32
+	GlblcntUsage  uint32
+	ProccntUsage  uint32
+	ModBaseAddr   *uintptr
+	ModBaseSize   uint32
+	HModule       uintptr
+	SzModule      [MAX_MODULE_NAME32 + 1]uint8
+	SzExePath     [MAX_PATH]uint8
+}
+
+// https://msdn.microsoft.com/8774e145-ee7f-44de-85db-0445b905f986
+func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+	ret, _, err := procReadProcessMemory.Call(
+		uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(nSize),
+		0,
+	)
+
+	if err.Error() != "The operation completed successfully." {
+		return 0, err
+	}
+
+	return ret, nil
+}
+
+// https://msdn.microsoft.com/9cd91f1c-58ce-4adc-b027-45748543eb06
+func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+	ret, _, err := procWriteProcessMemory.Call(
+		uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(nSize),
+	)
+	
+	if err.Error() != "The operation completed successfully." {
+		return 0, err
+	}
+
+	return ret, nil
+}
+
+// https://msdn.microsoft.com/8f695c38-19c4-49e4-97de-8b64ea536cb1
+func OpenProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32) (uintptr, error) {
+	inHandle := 0
+	if bInheritHandle {
+		inHandle = 1
+	}
+
+	ret, _, _ := procOpenProcess.Call(
+		uintptr(dwDesiredAccess),
+		uintptr(inHandle),
+		uintptr(dwProcessId),
+	)
+
+	if ret == 0 {
+		return 0, errors.New("failed to open process")
+	}
+
+	return uintptr(ret), nil
+}
+
+func GetModule(module string, PID uint32) (uintptr, error) {
+	var me32 ModuleEntry32
+	var snap uintptr
+
+	snap = createToolhelp32Snapshot(TH32CS_SNAPMODULE|TH32CS_SNAPMODULE32, PID)
+	me32.DwSize = uint32(unsafe.Sizeof(me32))
+	exit := module32First(snap, &me32)
+	parsed := parseint8(me32.SzModule[:])
+
+	if !exit {
+		closeHandle(snap)
+
+		return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("unexpected exit")
+	} else {
+		for i := true; i; i = module32Next(snap, &me32) {
+			parsed = parseint8(me32.SzModule[:])
+
+			if parsed == module {
+				return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), nil
+			}
+		}
+	}
+	return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("not found")
 }
 
 func GetProcessID(process string) (uint32, error) {
@@ -121,24 +213,24 @@ func process32Next(hSnapshot uintptr, pe *ProcessEntry32) bool {
 	return ret != 0
 }
 
-// https://msdn.microsoft.com/8f695c38-19c4-49e4-97de-8b64ea536cb1
-func OpenProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32) (uintptr, error) {
-	inHandle := 0
-	if bInheritHandle {
-		inHandle = 1
-	}
-
-	ret, _, _ := procOpenProcess.Call(
-		uintptr(dwDesiredAccess),
-		uintptr(inHandle),
-		uintptr(dwProcessId),
+// https://msdn.microsoft.com/bb41cab9-13a1-469d-bf76-68c172e982f6
+func module32First(hSnapshot uintptr, me *ModuleEntry32) bool {
+	ret, _, _ := procModule32First.Call(
+		uintptr(hSnapshot),
+		uintptr(unsafe.Pointer(me)),
 	)
 
-	if ret == 0 {
-		return 0, errors.New("failed to open process")
-	}
+	return ret != 0
+}
 
-	return uintptr(ret), nil
+// https://msdn.microsoft.com/88ec1af4-bae7-4cd7-b830-97a98fb337f4
+func module32Next(hSnapshot uintptr, me *ModuleEntry32) bool {
+	ret, _, _ := procModule32Next.Call(
+		uintptr(hSnapshot),
+		uintptr(unsafe.Pointer(me)),
+	)
+
+	return ret != 0
 }
 
 // https://msdn.microsoft.com/9b84891d-62ca-4ddc-97b7-c4c79482abd9
@@ -148,39 +240,6 @@ func closeHandle(hObject uintptr) bool {
 	)
 
 	return ret != 0
-}
-
-// https://msdn.microsoft.com/8774e145-ee7f-44de-85db-0445b905f986
-func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
-	ret, _, err := procReadProcessMemory.Call(
-		uintptr(hProcess),
-		uintptr(lpBaseAddress),
-		uintptr(unsafe.Pointer(lpBuffer)),
-		uintptr(nSize),
-		0,
-	)
-
-	if err.Error() != "The operation completed successfully." {
-		return 0, err
-	}
-
-	return ret, nil
-}
-
-// https://msdn.microsoft.com/9cd91f1c-58ce-4adc-b027-45748543eb06
-func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
-	ret, _, err := procWriteProcessMemory.Call(
-		uintptr(hProcess),
-		uintptr(lpBaseAddress),
-		uintptr(unsafe.Pointer(lpBuffer)),
-		uintptr(nSize),
-	)
-	
-	if err.Error() != "The operation completed successfully." {
-		return 0, err
-	}
-
-	return ret, nil
 }
 
 func parseint8(arr []uint8) string {

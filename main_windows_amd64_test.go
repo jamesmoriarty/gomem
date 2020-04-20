@@ -99,6 +99,26 @@ func TestProcessWrite(t *testing.T) {
 	}
 }
 
+func TestGetModuleNotFound(t *testing.T) {
+	name := executableName()
+
+	process, err := GetFromProcessName(name)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	
+	ptr, err := process.GetModule("client.dll")
+	
+	if err.Error() != "not found" {
+		t.Errorf(err.Error())
+	}
+
+	if (ptr) == 0 {
+		t.Errorf("unexpected value")
+	}
+}
+
 func executableName() string {
 	path, _ := os.Executable()
 

@@ -69,6 +69,17 @@ func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) (error)
 	return nil
 }
 
+// GetModule find module address.
+func (p *Process) GetModule(name string) (uintptr, error) {
+	ptr, err := process.GetModule(name, p.ID)
+
+	if err != nil {
+		return ptr, err
+	}
+
+	return ptr, nil
+}
+
 func main() {
 
 }
