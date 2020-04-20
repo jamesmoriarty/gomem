@@ -29,21 +29,21 @@ func TestGetFromProcessName(t *testing.T) {
 	}
 }
 
-// func TestProcessOpen(t *testing.T) {
-// 	name := executableName()
+func TestProcessOpen(t *testing.T) {
+	name := executableName()
 
-// 	process, _ := GetFromProcessName(name)
+	process, _ := GetFromProcessName(name)
 
-// 	handle, err := process.Open()
+	handle, err := process.Open()
 
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
-// 	if handle == 0 {
-// 		t.Errorf("unexpected handle id")
-// 	}
-// }
+	if handle == 0 {
+		t.Errorf("unexpected handle id")
+	}
+}
 
 func TestProcessRead(t *testing.T) {
 	name := executableName()
