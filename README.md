@@ -24,3 +24,7 @@ go build
 ```
 go test
 ```
+
+## Docs
+
+[godoc.org](https://godoc.org/github.com/jamesmoriarty/gomem)
