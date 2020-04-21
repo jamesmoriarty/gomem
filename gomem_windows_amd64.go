@@ -1,7 +1,7 @@
 package gomem
 
 import (
-	"github.com/jamesmoriarty/gomem/internal/kernal32"
+	"github.com/jamesmoriarty/gomem/internal/kernel32"
 	"github.com/jamesmoriarty/gomem/internal/user32"
 )
 
