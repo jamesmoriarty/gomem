@@ -107,7 +107,7 @@ func TestGetModuleNotFound(t *testing.T) {
 	process.Open()
 	ptr, err := process.GetModule("unknown.dll")
 
-	if err.Error() != "not found" {
+	if err.Error() != "module not found" {
 		t.Errorf(err.Error())
 	}
 

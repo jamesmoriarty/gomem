@@ -144,7 +144,7 @@ func GetModule(module string, PID uint32) (uintptr, error) {
 	if !exit {
 		closeHandle(snap)
 
-		return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("unexpected exit")
+		return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("module get unexpected exit")
 	} else {
 		for i := true; i; i = module32Next(snap, &me32) {
 			parsed = parseint8(me32.SzModule[:])
@@ -154,7 +154,7 @@ func GetModule(module string, PID uint32) (uintptr, error) {
 			}
 		}
 	}
-	return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("not found")
+	return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("module not found")
 }
 
 func GetProcessID(process string) (uint32, error) {
@@ -169,7 +169,7 @@ func GetProcessID(process string) (uint32, error) {
 	if !exit {
 		closeHandle(handle)
 
-		return 0, errors.New("failed to get pid")
+		return 0, errors.New("pid get unexpected exit")
 	} else {
 		for i := true; i; i = process32Next(handle, &pe32) {
 			parsed = parseint8(pe32.SzExeFile[:])
@@ -180,7 +180,7 @@ func GetProcessID(process string) (uint32, error) {
 		}
 	}
 
-	return 0, errors.New("failed to get pid")
+	return 0, errors.New("pid not found")
 }
 
 // https://msdn.microsoft.com/df643c25-7558-424c-b187-b3f86ba51358
