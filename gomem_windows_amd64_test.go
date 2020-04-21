@@ -43,7 +43,7 @@ func TestProcessOpen(t *testing.T) {
 
 func TestProcessRead(t *testing.T) {
 	name := executableName()
-	
+
 	var buffer uintptr
 	bufferPtr := &buffer
 
@@ -55,7 +55,7 @@ func TestProcessRead(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	
+
 	process.Open()
 	err = process.Read(valuePtr, bufferPtr, unsafe.Sizeof(value))
 
@@ -70,7 +70,7 @@ func TestProcessRead(t *testing.T) {
 
 func TestProcessWrite(t *testing.T) {
 	name := executableName()
-	
+
 	buffer := (uintptr)(43)
 	bufferPtr := &buffer
 
@@ -82,7 +82,7 @@ func TestProcessWrite(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	
+
 	process.Open()
 	err = process.Write(valuePtr, bufferPtr, unsafe.Sizeof(value))
 
@@ -103,9 +103,9 @@ func TestGetModuleNotFound(t *testing.T) {
 	if err != nil {
 		t.Errorf(err.Error())
 	}
-	
+
 	ptr, err := process.GetModule("client.dll")
-	
+
 	if err.Error() != "not found" {
 		t.Errorf(err.Error())
 	}

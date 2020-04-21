@@ -1,18 +1,8 @@
 package gomem
 
 import (
-	"fmt"
-	"strconv"
-	"github.com/jamesmoriarty/gomem/internal/process"
+	"github.com/jamesmoriarty/gomem/internal/sys"
 )
-
-// PtrToHex converts uintptr to hex string.
-func PtrToHex(ptr uintptr) string {
-	s := fmt.Sprintf("%d", ptr)
-	n, _ := strconv.Atoi(s)
-	h := fmt.Sprintf("0x%x", n)
-	return h
-}
 
 // Process is a struct representing a windows process.
 type Process struct {
@@ -23,7 +13,7 @@ type Process struct {
 
 // GetFromProcessName converts a process name to a Process struct.
 func GetFromProcessName(name string) (*Process, error) {
-	pid, err := process.GetProcessID(name)
+	pid, err := sys.GetProcessID(name)
 
 	if err != nil {
 		return nil, err
@@ -34,10 +24,10 @@ func GetFromProcessName(name string) (*Process, error) {
 	return &process, nil
 }
 
-// Open opens a Process handle.
+// Open process handle.
 func (p *Process) Open() (uintptr, error) {
-	handle, err := process.OpenProcess(process.PROCESS_ALL_ACCESS, false, p.ID)
-	
+	handle, err := sys.OpenProcess(sys.PROCESS_ALL_ACCESS, false, p.ID)
+
 	if err != nil {
 		return 0, err
 	}
@@ -48,8 +38,8 @@ func (p *Process) Open() (uintptr, error) {
 }
 
 // Read process memory.
-func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) (error) {
-	_, err := process.ReadProcessMemory(p.Handle, offset, buffer, length)
+func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) error {
+	_, err := sys.ReadProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
 		return err
@@ -59,8 +49,8 @@ func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) (error) 
 }
 
 // Write process memory.
-func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) (error) {
-	_, err := process.WriteProcessMemory(p.Handle, offset, buffer, length)
+func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) error {
+	_, err := sys.WriteProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
 		return err
@@ -69,9 +59,9 @@ func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) (error)
 	return nil
 }
 
-// GetModule find module address.
+// GetModule address.
 func (p *Process) GetModule(name string) (uintptr, error) {
-	ptr, err := process.GetModule(name, p.ID)
+	ptr, err := sys.GetModule(name, p.ID)
 
 	if err != nil {
 		return ptr, err

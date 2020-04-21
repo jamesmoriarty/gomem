@@ -1,4 +1,4 @@
-package process
+package sys
 
 import (
 	"bytes"
@@ -104,7 +104,7 @@ func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintp
 		uintptr(unsafe.Pointer(lpBuffer)),
 		uintptr(nSize),
 	)
-	
+
 	if err.Error() != "The operation completed successfully." {
 		return 0, err
 	}
