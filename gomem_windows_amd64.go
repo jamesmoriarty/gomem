@@ -1,7 +1,8 @@
 package gomem
 
 import (
-	"github.com/jamesmoriarty/gomem/internal/sys"
+	"github.com/jamesmoriarty/gomem/internal/kernal32"
+	"github.com/jamesmoriarty/gomem/internal/user32"
 )
 
 // Process is a struct representing a windows process.
@@ -13,7 +14,7 @@ type Process struct {
 
 // GetFromProcessName converts a process name to a Process struct.
 func GetFromProcessName(name string) (*Process, error) {
-	pid, err := sys.GetProcessID(name)
+	pid, err := kernal32.GetProcessID(name)
 
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func GetFromProcessName(name string) (*Process, error) {
 
 // Open process handle.
 func (p *Process) Open() (uintptr, error) {
-	handle, err := sys.OpenProcess(sys.PROCESS_ALL_ACCESS, false, p.ID)
+	handle, err := kernal32.OpenProcess(kernal32.PROCESS_ALL_ACCESS, false, p.ID)
 
 	if err != nil {
 		return 0, err
@@ -39,7 +40,7 @@ func (p *Process) Open() (uintptr, error) {
 
 // Read process memory.
 func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) error {
-	_, err := sys.ReadProcessMemory(p.Handle, offset, buffer, length)
+	_, err := kernal32.ReadProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
 		return err
@@ -50,7 +51,7 @@ func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) error {
 
 // Write process memory.
 func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) error {
-	_, err := sys.WriteProcessMemory(p.Handle, offset, buffer, length)
+	_, err := kernal32.WriteProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
 		return err
@@ -61,7 +62,7 @@ func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) error {
 
 // GetModule address.
 func (p *Process) GetModule(name string) (uintptr, error) {
-	ptr, err := sys.GetModule(name, p.ID)
+	ptr, err := kernal32.GetModule(name, p.ID)
 
 	if err != nil {
 		return ptr, err
@@ -69,3 +70,9 @@ func (p *Process) GetModule(name string) (uintptr, error) {
 
 	return ptr, nil
 }
+
+// IsKeyDown https://docs.microsoft.com/en-gb/windows/win32/inputdev/virtual-key-codes
+func IsKeyDown(v int) bool {
+	return user32.GetAsyncKeyState(v) > 0
+}
+
