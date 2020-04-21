@@ -104,7 +104,8 @@ func TestGetModuleNotFound(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	ptr, err := process.GetModule("kernal32.dll")
+	process.Open()
+	ptr, err := process.GetModule("unknown.dll")
 
 	if err.Error() != "not found" {
 		t.Errorf(err.Error())
