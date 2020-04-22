@@ -9,8 +9,8 @@ import "github.com/jamesmoriarty/gomem"
 ...
 process, err := gomem.GetFromProcessName(name)
 process.Open()
-process.Read(valuePtr, bufferPtr, unsafe.Sizeof(value))
-process.Write(valuePtr, bufferPtr, unsafe.Sizeof(value))
+process.Read(offsetPtr, bufferPtr, unsafe.Sizeof(value))
+process.Write(offsetPtr, bufferPtr, unsafe.Sizeof(value))
 ```
 
 ## Build
