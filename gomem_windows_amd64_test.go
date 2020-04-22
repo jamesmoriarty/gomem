@@ -44,8 +44,8 @@ func TestProcessOpen(t *testing.T) {
 func TestProcessRead(t *testing.T) {
 	name := executableName()
 
-	var buffer uintptr
-	bufferPtr := &buffer
+	var buffer int
+	bufferPtr := (*uintptr)(unsafe.Pointer(&buffer))
 
 	value := 42
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
@@ -71,8 +71,8 @@ func TestProcessRead(t *testing.T) {
 func TestProcessWrite(t *testing.T) {
 	name := executableName()
 
-	buffer := (uintptr)(43)
-	bufferPtr := &buffer
+	buffer := 43
+	bufferPtr := (*uintptr)(unsafe.Pointer(&buffer))
 
 	value := 42
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
