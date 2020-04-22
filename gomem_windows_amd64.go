@@ -75,4 +75,3 @@ func (p *Process) GetModule(name string) (uintptr, error) {
 func IsKeyDown(v int) bool {
 	return user32.GetAsyncKeyState(v) > 0
 }
-

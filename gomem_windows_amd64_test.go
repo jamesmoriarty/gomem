@@ -116,7 +116,7 @@ func TestGetModuleNotFound(t *testing.T) {
 	}
 }
 
-func TestIsKeyDown(t *testing.T) { 
+func TestIsKeyDown(t *testing.T) {
 	value := IsKeyDown(0x20) // https://docs.microsoft.com/en-gb/windows/win32/inputdev/virtual-key-codes
 
 	if value != false {
