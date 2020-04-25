@@ -45,7 +45,7 @@ func TestProcessRead(t *testing.T) {
 	name := executableName()
 
 	var buffer int
-	bufferPtr := (*uintptr)(unsafe.Pointer(&buffer))
+	bufferPtr := (uintptr)(unsafe.Pointer(&buffer))
 
 	value := 42
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
@@ -63,7 +63,7 @@ func TestProcessRead(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(*bufferPtr) != value {
+	if (int)(buffer) != 42 {
 		t.Errorf("unexpected value")
 	}
 }
@@ -72,7 +72,7 @@ func TestProcessWrite(t *testing.T) {
 	name := executableName()
 
 	buffer := 43
-	bufferPtr := (*uintptr)(unsafe.Pointer(&buffer))
+	bufferPtr := (uintptr)(unsafe.Pointer(&buffer))
 
 	value := 42
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
@@ -90,7 +90,7 @@ func TestProcessWrite(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(buffer) != value {
+	if (int)(value) != 43 {
 		t.Errorf("unexpected value")
 	}
 }

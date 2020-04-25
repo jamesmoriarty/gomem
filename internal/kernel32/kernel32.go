@@ -80,11 +80,11 @@ type ModuleEntry32 struct {
 }
 
 // https://msdn.microsoft.com/8774e145-ee7f-44de-85db-0445b905f986
-func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer uintptr, nSize uintptr) (uintptr, error) {
 	ret, _, err := procReadProcessMemory.Call(
 		uintptr(hProcess),
 		uintptr(lpBaseAddress),
-		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(lpBuffer),
 		uintptr(nSize),
 		0,
 	)
@@ -97,11 +97,11 @@ func ReadProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintpt
 }
 
 // https://msdn.microsoft.com/9cd91f1c-58ce-4adc-b027-45748543eb06
-func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer *uintptr, nSize uintptr) (uintptr, error) {
+func WriteProcessMemory(hProcess uintptr, lpBaseAddress uintptr, lpBuffer uintptr, nSize uintptr) (uintptr, error) {
 	ret, _, err := procWriteProcessMemory.Call(
 		uintptr(hProcess),
 		uintptr(lpBaseAddress),
-		uintptr(unsafe.Pointer(lpBuffer)),
+		uintptr(lpBuffer),
 		uintptr(nSize),
 	)
 

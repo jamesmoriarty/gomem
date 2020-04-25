@@ -39,7 +39,7 @@ func (p *Process) Open() (uintptr, error) {
 }
 
 // Read process memory.
-func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) error {
+func (p *Process) Read(offset uintptr, buffer uintptr, length uintptr) error {
 	_, err := kernal32.ReadProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
@@ -50,7 +50,7 @@ func (p *Process) Read(offset uintptr, buffer *uintptr, length uintptr) error {
 }
 
 // Write process memory.
-func (p *Process) Write(offset uintptr, buffer *uintptr, length uintptr) error {
+func (p *Process) Write(offset uintptr, buffer uintptr, length uintptr) error {
 	_, err := kernal32.WriteProcessMemory(p.Handle, offset, buffer, length)
 
 	if err != nil {
