@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"runtime"
 	"unsafe"
 )
 
@@ -44,11 +45,11 @@ func TestProcessOpen(t *testing.T) {
 func TestProcessRead(t *testing.T) {
 	name := executableName()
 
-	var buffer int
-	bufferPtr := (uintptr)(unsafe.Pointer(&buffer))
+	var bufferValue int
+	bufferPtr := (uintptr)(unsafe.Pointer(&bufferValue))
 
-	value := 42
-	valuePtr := (uintptr)(unsafe.Pointer(&value))
+	offsetValue := 42
+	offsetPtr := (uintptr)(unsafe.Pointer(&offsetValue))
 
 	process, err := GetFromProcessName(name)
 
@@ -57,13 +58,13 @@ func TestProcessRead(t *testing.T) {
 	}
 
 	process.Open()
-	err = process.Read(valuePtr, bufferPtr, unsafe.Sizeof(value))
+	err = process.Read(offsetPtr, bufferPtr, unsafe.Sizeof(offsetValue))
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(buffer) != 42 {
+	if (int)(bufferValue) != 42 {
 		t.Errorf("unexpected value")
 	}
 }
@@ -71,11 +72,11 @@ func TestProcessRead(t *testing.T) {
 func TestProcessWrite(t *testing.T) {
 	name := executableName()
 
-	buffer := 43
-	bufferPtr := (uintptr)(unsafe.Pointer(&buffer))
+	var bufferValue = 43
+	bufferPtr := (uintptr)(unsafe.Pointer(&bufferValue))
 
-	value := 42
-	valuePtr := (uintptr)(unsafe.Pointer(&value))
+	offsetValue := 42
+	offsetPtr := (uintptr)(unsafe.Pointer(&offsetValue))
 
 	process, err := GetFromProcessName(name)
 
@@ -84,15 +85,18 @@ func TestProcessWrite(t *testing.T) {
 	}
 
 	process.Open()
-	err = process.Write(valuePtr, bufferPtr, unsafe.Sizeof(value))
+	err = process.Write(offsetPtr, bufferPtr, unsafe.Sizeof(bufferValue))
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(value) != 43 {
+	if (int)(offsetValue) != 43 {
 		t.Errorf("unexpected value")
 	}
+
+	runtime.KeepAlive(&bufferValue)
+	runtime.KeepAlive(&offsetValue)
 }
 
 func TestGetModuleNotFound(t *testing.T) {
