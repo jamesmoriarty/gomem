@@ -22,7 +22,7 @@ const (
 	PROCESS_ALL_ACCESS       = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0xffff
 )
 
-type (
+// type (
 // BOOL      int32
 // DWORD     uint32
 // ULONG_PTR uintptr
@@ -32,7 +32,7 @@ type (
 // SIZE_T    uintptr
 // HMODULE   uintptr
 // BYTE      byte
-)
+// )
 
 var (
 	kernel32                     = syscall.MustLoadDLL("kernel32.dll")
@@ -133,50 +133,41 @@ func OpenProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32
 }
 
 func GetModule(module string, PID uint32) (uintptr, error) {
-	var me32 ModuleEntry32
-	var snap uintptr
+	var (
+		me32 ModuleEntry32
+		snap uintptr
+		szModule string
+	)
 
 	snap = createToolhelp32Snapshot(TH32CS_SNAPMODULE|TH32CS_SNAPMODULE32, PID)
 	me32.DwSize = uint32(unsafe.Sizeof(me32))
-	exit := module32First(snap, &me32)
-	parsed := parseint8(me32.SzModule[:])
 
-	if !exit {
-		closeHandle(snap)
+	for ok := module32First(snap, &me32); ok; ok = module32Next(snap, &me32) {
+		szModule = parseint8(me32.SzModule[:])
 
-		return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("module get unexpected exit")
-	} else {
-		for i := true; i; i = module32Next(snap, &me32) {
-			parsed = parseint8(me32.SzModule[:])
-
-			if parsed == module {
-				return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), nil
-			}
+		if szModule == module {
+			return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), nil
 		}
 	}
+
 	return (uintptr)(unsafe.Pointer(me32.ModBaseAddr)), errors.New("module not found")
 }
 
 func GetProcessID(process string) (uint32, error) {
-	var handle uintptr
-	var pe32 ProcessEntry32
+	var (
+		handle uintptr
+		pe32 ProcessEntry32
+		szExeFile string
+	)
 
 	handle = createToolhelp32Snapshot(TH32CS_SNAPALL, 0)
 	pe32.DwSize = uint32(unsafe.Sizeof(pe32))
-	exit := process32First(handle, &pe32)
-	parsed := parseint8(pe32.SzExeFile[:])
 
-	if !exit {
-		closeHandle(handle)
+	for ok := process32First(handle, &pe32); ok; ok = process32Next(handle, &pe32) {
+		szExeFile = parseint8(pe32.SzExeFile[:])
 
-		return 0, errors.New("pid get unexpected exit")
-	} else {
-		for i := true; i; i = process32Next(handle, &pe32) {
-			parsed = parseint8(pe32.SzExeFile[:])
-
-			if parsed == process {
-				return pe32.Th32ProcessID, nil
-			}
+		if szExeFile == process {
+			return pe32.Th32ProcessID, nil
 		}
 	}
 
