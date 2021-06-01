@@ -4,7 +4,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"runtime"
 	"unsafe"
 )
 
@@ -42,14 +41,11 @@ func TestProcessOpen(t *testing.T) {
 	}
 }
 
-func TestProcessRead(t *testing.T) {
+func TestProcessReadByte(t *testing.T) {
 	name := executableName()
 
-	var bufferValue int
-	bufferPtr := (uintptr)(unsafe.Pointer(&bufferValue))
-
-	offsetValue := 42
-	offsetPtr := (uintptr)(unsafe.Pointer(&offsetValue))
+	var value = (byte)(0x42)
+	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
 	process, err := GetFromProcessName(name)
 
@@ -58,25 +54,22 @@ func TestProcessRead(t *testing.T) {
 	}
 
 	process.Open()
-	err = process.Read(offsetPtr, bufferPtr, unsafe.Sizeof(offsetValue))
+	assertValue, err := process.ReadByte(valuePtr)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(bufferValue) != 42 {
+	if value != assertValue {
 		t.Errorf("unexpected value")
 	}
 }
 
-func TestProcessWrite(t *testing.T) {
+func TestProcessReadUInt32(t *testing.T) {
 	name := executableName()
 
-	var bufferValue = 43
-	bufferPtr := (uintptr)(unsafe.Pointer(&bufferValue))
-
-	offsetValue := 42
-	offsetPtr := (uintptr)(unsafe.Pointer(&offsetValue))
+	var value = (uint32)(42)
+	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
 	process, err := GetFromProcessName(name)
 
@@ -85,18 +78,66 @@ func TestProcessWrite(t *testing.T) {
 	}
 
 	process.Open()
-	err = process.Write(offsetPtr, bufferPtr, unsafe.Sizeof(bufferValue))
+	assertValue, err := process.ReadUInt32(valuePtr)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if (int)(offsetValue) != 43 {
+	if value != assertValue {
 		t.Errorf("unexpected value")
 	}
+}
 
-	runtime.KeepAlive(&bufferValue)
-	runtime.KeepAlive(&offsetValue)
+func TestProcessReadUInt64(t *testing.T) {
+	name := executableName()
+
+	var value = (uint64)(42)
+	valuePtr := (uintptr)(unsafe.Pointer(&value))
+
+	process, err := GetFromProcessName(name)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	process.Open()
+	assertValue, err := process.ReadUInt64(valuePtr)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if value != assertValue {
+		t.Errorf("unexpected value")
+	}
+}
+
+func TestProcessWriteByte(t *testing.T) {
+	name := executableName()
+
+	var (
+		value    = (byte)(0x42)
+		valuePtr = (uintptr)(unsafe.Pointer(&value))
+		newValue = (byte)(0x43)
+	)
+
+	process, err := GetFromProcessName(name)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	process.Open()
+	err = process.WriteByte(valuePtr, newValue)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if value != newValue {
+		t.Errorf("unexpected value")
+	}
 }
 
 func TestGetModuleNotFound(t *testing.T) {
