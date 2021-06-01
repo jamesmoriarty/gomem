@@ -134,8 +134,8 @@ func OpenProcess(dwDesiredAccess uint32, bInheritHandle bool, dwProcessId uint32
 
 func GetModule(module string, PID uint32) (uintptr, error) {
 	var (
-		me32 ModuleEntry32
-		snap uintptr
+		me32     ModuleEntry32
+		snap     uintptr
 		szModule string
 	)
 
@@ -155,8 +155,8 @@ func GetModule(module string, PID uint32) (uintptr, error) {
 
 func GetProcessID(process string) (uint32, error) {
 	var (
-		handle uintptr
-		pe32 ProcessEntry32
+		handle    uintptr
+		pe32      ProcessEntry32
 		szExeFile string
 	)
 

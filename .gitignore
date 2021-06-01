@@ -1,2 +1,7 @@
 gomem.exe
-cover.txt
+
+# go test -covermode=atomic -coverprofile=coverage -v ./...
+coverage
+
+# go tool cover -html=coverage -o coverage.html
+coverage.html

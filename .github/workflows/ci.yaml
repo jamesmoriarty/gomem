@@ -5,9 +5,9 @@ on: [ push ]
 jobs:
   lint:
     strategy:
-      matrix: 
+      matrix:
         os: [ 'windows-latest' ]
-        go: [ '1.14' ]
+        go: [ '1.16' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -22,9 +22,9 @@ jobs:
 
   test:
     strategy:
-      matrix: 
+      matrix:
         os: [ 'windows-latest']
-        go: [ '1.13', '1.14' ]
+        go: [ '1.15', '1.16' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -35,7 +35,7 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
-      - run: go test ./...
+      - run: go test -covermode=atomic -coverprofile=coverage -v ./...
         env:
           CGO_ENABLED: 1
 
@@ -46,7 +46,7 @@ jobs:
           - os: 'windows-latest'
             goos: 'windows'
             goarch: 'amd64'
-        go: [ '1.13', '1.14' ]
+        go: [ '1.15', '1.16' ]
 
     runs-on: ${{ matrix.target.os }}
 

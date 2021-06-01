@@ -1,7 +1,9 @@
 package gomem
 
 import (
-	"github.com/jamesmoriarty/gomem/internal/kernel32"
+	"unsafe"
+
+	kernal32 "github.com/jamesmoriarty/gomem/internal/kernel32"
 	"github.com/jamesmoriarty/gomem/internal/user32"
 )
 
@@ -42,33 +44,66 @@ func (p *Process) Open() (uintptr, error) {
 func (p *Process) Read(offset uintptr, buffer uintptr, length uintptr) error {
 	_, err := kernal32.ReadProcessMemory(p.Handle, offset, buffer, length)
 
-	if err != nil {
-		return err
-	}
+	return err
+}
 
-	return nil
+// Read byte from process memory.
+func (p *Process) ReadByte(offset uintptr) (byte, error) {
+	var (
+		value    byte
+		valuePtr = (uintptr)(unsafe.Pointer(&value))
+	)
+
+	err := p.Read(offset, valuePtr, unsafe.Sizeof(value))
+
+	return value, err
+}
+
+// Read uint32 from process memory.
+func (p *Process) ReadUInt32(offset uintptr) (uint32, error) {
+	var (
+		value    uint32
+		valuePtr = (uintptr)(unsafe.Pointer(&value))
+	)
+
+	err := p.Read(offset, valuePtr, unsafe.Sizeof(value))
+
+	return value, err
+}
+
+// Read uint64 from process memory.
+func (p *Process) ReadUInt64(offset uintptr) (uint64, error) {
+	var (
+		value    uint64
+		valuePtr = (uintptr)(unsafe.Pointer(&value))
+	)
+
+	err := p.Read(offset, valuePtr, unsafe.Sizeof(value))
+
+	return value, err
 }
 
 // Write process memory.
 func (p *Process) Write(offset uintptr, buffer uintptr, length uintptr) error {
 	_, err := kernal32.WriteProcessMemory(p.Handle, offset, buffer, length)
 
-	if err != nil {
-		return err
-	}
+	return err
+}
 
-	return nil
+// Write byte to process memory.
+func (p *Process) WriteByte(offset uintptr, value byte) error {
+	var (
+		valuePtr = (uintptr)(unsafe.Pointer(&value))
+	)
+
+	return p.Write(offset, valuePtr, unsafe.Sizeof(value))
 }
 
 // GetModule address.
 func (p *Process) GetModule(name string) (uintptr, error) {
 	ptr, err := kernal32.GetModule(name, p.ID)
 
-	if err != nil {
-		return ptr, err
-	}
-
-	return ptr, nil
+	return ptr, err
 }
 
 // IsKeyDown https://docs.microsoft.com/en-gb/windows/win32/inputdev/virtual-key-codes
