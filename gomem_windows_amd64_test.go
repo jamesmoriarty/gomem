@@ -7,10 +7,10 @@ import (
 	"unsafe"
 )
 
-func TestGetFromProcessName(t *testing.T) {
+func TestGetProcessFromName(t *testing.T) {
 	name := executableName()
 
-	process, err := GetFromProcessName(name)
+	process, err := GetProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -28,7 +28,7 @@ func TestGetFromProcessName(t *testing.T) {
 func TestProcessOpen(t *testing.T) {
 	name := executableName()
 
-	process, _ := GetFromProcessName(name)
+	process, _ := GetProcessFromName(name)
 
 	handle, err := process.Open()
 
@@ -47,13 +47,12 @@ func TestProcessReadByte(t *testing.T) {
 	var value = (byte)(0x42)
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
-	process, err := GetFromProcessName(name)
+	process, err := GetOpenProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	process.Open()
 	assertValue, err := process.ReadByte(valuePtr)
 
 	if err != nil {
@@ -71,7 +70,7 @@ func TestProcessReadUInt32(t *testing.T) {
 	var value = (uint32)(42)
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
-	process, err := GetFromProcessName(name)
+	process, err := GetOpenProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -95,7 +94,7 @@ func TestProcessReadUInt64(t *testing.T) {
 	var value = (uint64)(42)
 	valuePtr := (uintptr)(unsafe.Pointer(&value))
 
-	process, err := GetFromProcessName(name)
+	process, err := GetOpenProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -122,7 +121,7 @@ func TestProcessWriteByte(t *testing.T) {
 		newValue = (byte)(0x43)
 	)
 
-	process, err := GetFromProcessName(name)
+	process, err := GetOpenProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -143,7 +142,7 @@ func TestProcessWriteByte(t *testing.T) {
 func TestGetModuleNotFound(t *testing.T) {
 	name := executableName()
 
-	process, err := GetFromProcessName(name)
+	process, err := GetOpenProcessFromName(name)
 
 	if err != nil {
 		t.Errorf(err.Error())

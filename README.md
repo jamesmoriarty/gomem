@@ -7,8 +7,7 @@ A Go library for manipulating Windows processes.
 ```go
 import "github.com/jamesmoriarty/gomem"
 ...
-process, err := gomem.GetFromProcessName(name)
-process.Open()
+process, err := gomem.GetOpenProcessFromName(name)
 valuePtr, err := process.ReadUInt32(offsetPtr)
 process.WriteByte(valuePtr, value)
 ```
