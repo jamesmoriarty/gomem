@@ -1,4 +1,4 @@
-package kernal32
+package kernel32
 
 import (
 	"bytes"

@@ -3,7 +3,7 @@ package gomem
 import (
 	"unsafe"
 
-	kernal32 "github.com/jamesmoriarty/gomem/internal/kernel32"
+	"github.com/jamesmoriarty/gomem/internal/kernel32"
 	"github.com/jamesmoriarty/gomem/internal/user32"
 )
 
@@ -14,9 +14,9 @@ type Process struct {
 	Handle uintptr
 }
 
-// GetFromProcessName converts a process name to a Process struct.
-func GetFromProcessName(name string) (*Process, error) {
-	pid, err := kernal32.GetProcessID(name)
+// GetProcessFromName converts a process name to a Process struct.
+func GetProcessFromName(name string) (*Process, error) {
+	pid, err := kernel32.GetProcessID(name)
 
 	if err != nil {
 		return nil, err
@@ -27,9 +27,26 @@ func GetFromProcessName(name string) (*Process, error) {
 	return &process, nil
 }
 
+// GetOpenProcessFromName converts a process name to a Process struct with open handle.
+func GetOpenProcessFromName(name string) (*Process, error) {
+	process, err := GetProcessFromName(name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = process.Open()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return process, nil
+}
+
 // Open process handle.
 func (p *Process) Open() (uintptr, error) {
-	handle, err := kernal32.OpenProcess(kernal32.PROCESS_ALL_ACCESS, false, p.ID)
+	handle, err := kernel32.OpenProcess(kernel32.PROCESS_ALL_ACCESS, false, p.ID)
 
 	if err != nil {
 		return 0, err
@@ -42,7 +59,7 @@ func (p *Process) Open() (uintptr, error) {
 
 // Read process memory.
 func (p *Process) Read(offset uintptr, buffer uintptr, length uintptr) error {
-	_, err := kernal32.ReadProcessMemory(p.Handle, offset, buffer, length)
+	_, err := kernel32.ReadProcessMemory(p.Handle, offset, buffer, length)
 
 	return err
 }
@@ -85,7 +102,7 @@ func (p *Process) ReadUInt64(offset uintptr) (uint64, error) {
 
 // Write process memory.
 func (p *Process) Write(offset uintptr, buffer uintptr, length uintptr) error {
-	_, err := kernal32.WriteProcessMemory(p.Handle, offset, buffer, length)
+	_, err := kernel32.WriteProcessMemory(p.Handle, offset, buffer, length)
 
 	return err
 }
@@ -101,7 +118,7 @@ func (p *Process) WriteByte(offset uintptr, value byte) error {
 
 // GetModule address.
 func (p *Process) GetModule(name string) (uintptr, error) {
-	ptr, err := kernal32.GetModule(name, p.ID)
+	ptr, err := kernel32.GetModule(name, p.ID)
 
 	return ptr, err
 }
