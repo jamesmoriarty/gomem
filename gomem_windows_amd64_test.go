@@ -76,7 +76,6 @@ func TestProcessReadUInt32(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	process.Open()
 	assertValue, err := process.ReadUInt32(valuePtr)
 
 	if err != nil {
@@ -100,7 +99,6 @@ func TestProcessReadUInt64(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	process.Open()
 	assertValue, err := process.ReadUInt64(valuePtr)
 
 	if err != nil {
@@ -127,7 +125,6 @@ func TestProcessWriteByte(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	process.Open()
 	err = process.WriteByte(valuePtr, newValue)
 
 	if err != nil {
@@ -148,7 +145,6 @@ func TestGetModuleNotFound(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	process.Open()
 	ptr, err := process.GetModule("unknown.dll")
 
 	if err.Error() != "module not found" {
