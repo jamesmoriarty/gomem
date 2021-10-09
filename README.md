@@ -2,7 +2,7 @@
 
 ![Continuous Integration](https://github.com/jamesmoriarty/gomem/workflows/Continuous%20Integration/badge.svg?branch=master) ![Latest Tag](https://img.shields.io/github/v/tag/jamesmoriarty/gomem.svg?logo=github&label=latest) [![Go Report Card](https://goreportcard.com/badge/github.com/jamesmoriarty/gomem)](https://goreportcard.com/report/github.com/jamesmoriarty/gomem)
 
-A Go package for manipulating Windows processes.
+A Go package for manipulating Windows processes. Automated tests manipulate and verify its own process memory via Windows APIs.
 
 ```go
 import "github.com/jamesmoriarty/gomem"
