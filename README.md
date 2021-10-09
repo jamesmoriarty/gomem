@@ -6,9 +6,14 @@ A Go library for manipulating Windows processes.
 
 ```go
 import "github.com/jamesmoriarty/gomem"
-...
-process, err := gomem.GetOpenProcessFromName(name)
+
+# Open process with handle.
+process, err  := gomem.GetOpenProcessFromName("example.exe")
+
+# Read from process memory.
 valuePtr, err := process.ReadUInt32(offsetPtr)
+
+# Write to process memory.
 process.WriteByte(valuePtr, value)
 ```
 
@@ -26,7 +31,7 @@ go test
 
 ## Docs
 
-[Package](https://pkg.go.dev/github.com/jamesmoriarty/gomem)
+[package](https://pkg.go.dev/github.com/jamesmoriarty/gomem)
 
 ## Examples
 
