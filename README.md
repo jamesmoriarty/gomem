@@ -26,7 +26,7 @@ go test
 
 ## Docs
 
-[godoc.org](https://godoc.org/github.com/jamesmoriarty/gomem)
+[Package](https://pkg.go.dev/github.com/jamesmoriarty/gomem)
 
 ## Examples
 
