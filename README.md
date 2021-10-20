@@ -7,13 +7,13 @@ A Go package for manipulating Windows processes. Automated tests manipulate and 
 ```go
 import "github.com/jamesmoriarty/gomem"
 
-# Open process with handle.
+// Open process with handle.
 process, err  := gomem.GetOpenProcessFromName("example.exe")
 
-# Read from process memory.
+// Read from process memory.
 valuePtr, err := process.ReadUInt32(offsetPtr)
 
-# Write to process memory.
+// Write to process memory.
 process.WriteByte(valuePtr, value)
 ```
 
@@ -31,8 +31,8 @@ go test
 
 ## Docs
 
-[package](https://pkg.go.dev/github.com/jamesmoriarty/gomem)
+[pkg.go.dev/github.com/jamesmoriarty/gomem](https://pkg.go.dev/github.com/jamesmoriarty/gomem)
 
 ## Examples
 
-[gohack](https://github.com/jamesmoriarty/gohack)
+[github.com/jamesmoriarty/gohack](https://github.com/jamesmoriarty/gohack)
